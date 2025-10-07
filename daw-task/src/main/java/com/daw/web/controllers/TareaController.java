@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +26,8 @@ public class TareaController {
 	private TareaService tareaService; 
 	
 	@GetMapping
-	public List<Tarea> list(){
-		return this.tareaService.findAll();
+	public ResponseEntity<?> list(){
+		return ResponseEntity.ok(this.tareaService.findAll());
 	}
 	@GetMapping("/{idTarea}")
 	public ResponseEntity<?> findByid(@PathVariable int idTarea) {
@@ -35,15 +38,28 @@ public class TareaController {
 		}
 	}
 	
+	@PostMapping
 	public ResponseEntity<?> create(@RequestBody Tarea tarea){
 		try {
-			return ResponseEntity.ok(this.tareaService.create(tarea));
+			return ResponseEntity.status(HttpStatus.CREATED).body(this.tareaService.create(tarea));
 
 		} catch (TareaExceptions e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
 		}
 	}
+	
+	@PutMapping("/{idTarea}")
+	public ResponseEntity<?> update(@PathVariable int idTarea, @RequestBody Tarea tarea){
+		try {
+			return ResponseEntity.ok(this.tareaService.update(tarea, idTarea));
+		} catch (TareaNotFound ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		} catch(TareaExceptions ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+		}
+	}
+	
 	
 
 }

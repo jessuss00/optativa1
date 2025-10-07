@@ -5,7 +5,7 @@ package com.daw.servicies;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
+import com.daw.web.controllers.TareaController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,11 @@ import com.daw.servicies.exeptions.TareaNotFound;
 
 @Service
 public class TareaService {
+
+    
 	@Autowired
 	private TareaRepository tareaRepository;
+
 	
 	//findAll
 	@GetMapping
@@ -49,6 +52,27 @@ public class TareaService {
 		return this.tareaRepository.save(tarea);
 	}
 	//update
+	public Tarea update(Tarea tarea, int idTarea) {
+		if(tarea.getId()!=idTarea) {
+			throw new TareaExceptions("El id del body y del path no coinciden");
+		}
+		if (!this.tareaRepository.existsById(idTarea)) {
+			throw new TareaNotFound("El id de la tarea no existe");
+		}
+		if (tarea.getEstado()!=null) {
+			throw new TareaExceptions("No se puede modificar el estado");
+		}
+		if (tarea.getFechaCreacion()!=null) {
+			throw new TareaExceptions("No se puede modificar la fecha de creacion");
+		}
+		Tarea tareaBD = this.findById(idTarea);
+		tareaBD.setTitulo(tarea.getTitulo());
+		tareaBD.setDescripcion(tarea.getDescripcion());
+		tareaBD.setFechaVencimiento(tarea.getFechaVencimiento());
+		
+		return this.tareaRepository.save(tarea);	
+		}
+	
 	//delete
 	public void delete(int idTarea) {
 		this.tareaRepository.deleteById(idTarea);
