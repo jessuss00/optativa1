@@ -74,8 +74,30 @@ public class TareaService {
 		}
 	
 	//delete
-	public void delete(int idTarea) {
-		this.tareaRepository.deleteById(idTarea);
+	public boolean delete(int idTarea) {
+		
+		if (this.tareaRepository.existsById(idTarea)) {
+			throw new TareaNotFound("La tarea no existe");
+		}
+			this.tareaRepository.deleteById(idTarea);
+		
+		
+		return this.tareaRepository.existsById(idTarea);
+		
+	}
+	
+	public Tarea marcarEnProgreso(int idTarea) {
+		if(!this.tareaRepository.existsById(idTarea)) {
+			throw new TareaExceptions("El id del body y del path no coinciden");
+		}
+		if (this.tareaRepository.findById(idTarea).get().getEstado().equals(Estado.PENDIENTE)) {
+			throw new TareaExceptions("La tarea ya esta completada o ya esta en pogreso");
+			
+		}
+		 Tarea tarea = this.findById(idTarea);
+		 tarea.setEstado(Estado.EN_PROGRESO);
+		 
+		 return this.tareaRepository.save(tarea);
 	}
 
 }
