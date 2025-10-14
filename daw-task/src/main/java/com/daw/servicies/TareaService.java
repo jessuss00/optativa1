@@ -99,5 +99,20 @@ public class TareaService {
 		 
 		 return this.tareaRepository.save(tarea);
 	}
+	
+	//Obtener tareas pendientes
+	public List<Tarea> Pendientes(){
+		return this.tareaRepository.findByEstado(Estado.PENDIENTE);
+	}
+	
+	//Obtener las tareas en progreso
+	public List<Tarea> Progreso(){
+		return this.tareaRepository.findByEstado(Estado.EN_PROGRESO);
+	}
+	
+	//Obtener tarea completadas 
+	public List<Tarea> Completadas(){
+		return this.tareaRepository.findByEstado(Estado.COMPLETADA);
+	}
 
 }

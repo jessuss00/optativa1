@@ -72,5 +72,30 @@ public class TareaController {
 	}
 	
 	
+	@GetMapping("/pendientes")
+	public ResponseEntity<?> pendientes(){
+		return ResponseEntity.ok(this.tareaService.Pendientes());
+	}
+	
+	@GetMapping("/progreso")
+	public ResponseEntity<?> progreso(){
+		return ResponseEntity.ok(this.tareaService.Progreso());
+	}
+
+	@GetMapping("/completadas")
+	public ResponseEntity<?> completadas(){
+		return ResponseEntity.ok(this.tareaService.Completadas());
+	}
+	
+	@PutMapping("/{idTarea}/iniciar")
+	public ResponseEntity<?> iniciarTarea(@PathVariable int idTarea){
+		try {
+			return ResponseEntity.ok(this.tareaService.marcarEnProgreso(idTarea));
+		} catch (TareaNotFound ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		} catch(TareaExceptions ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+		}
+	}
 
 }
