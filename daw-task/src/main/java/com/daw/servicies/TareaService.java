@@ -85,12 +85,12 @@ public class TareaService {
 		return this.tareaRepository.existsById(idTarea);
 		
 	}
-	
+	//Iniciar una tarea
 	public Tarea marcarEnProgreso(int idTarea) {
 		if(!this.tareaRepository.existsById(idTarea)) {
 			throw new TareaExceptions("El id del body y del path no coinciden");
 		}
-		if (this.tareaRepository.findById(idTarea).get().getEstado().equals(Estado.PENDIENTE)) {
+		if ((this.tareaRepository.findById(idTarea).get().getEstado().equals(Estado.COMPLETADA))||(this.tareaRepository.findById(idTarea).get().getEstado().equals(Estado.EN_PROGRESO))) {
 			throw new TareaExceptions("La tarea ya esta completada o ya esta en pogreso");
 			
 		}
@@ -113,6 +113,36 @@ public class TareaService {
 	//Obtener tarea completadas 
 	public List<Tarea> Completadas(){
 		return this.tareaRepository.findByEstado(Estado.COMPLETADA);
+	}
+	
+	//Completar una tarea
+	public Tarea marcarComoCompletada(int idTarea) {
+	    Tarea tarea = this.findById(idTarea);
+	    if(!this.tareaRepository.existsById(idTarea)) {
+			throw new TareaExceptions("El id del body y del path no coinciden");
+		}
+	    
+	    if (tarea.getEstado() != Estado.EN_PROGRESO) {
+	        throw new TareaExceptions("Solo se pueden completar tareas que estén en progreso");
+	    }
+
+	    tarea.setEstado(Estado.COMPLETADA);
+	    return this.tareaRepository.save(tarea);
+	}
+	
+	// Obtener tareas vencidas
+	public List<Tarea> obtenerVencidas() {
+	    return this.tareaRepository.findByFechaVencimientoBefore(LocalDate.now());
+	}
+
+	// Obtener tareas no vencidas
+	public List<Tarea> obtenerNoVencidas() {
+	    return this.tareaRepository.findByFechaVencimientoAfter(LocalDate.now());
+	}
+
+	// Buscar tareas por título
+	public List<Tarea> buscarPorTitulo(String titulo) {
+	    return this.tareaRepository.findByTituloContainingIgnoreCase(titulo);
 	}
 
 }

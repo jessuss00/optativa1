@@ -24,12 +24,13 @@ import com.daw.servicies.exeptions.TareaNotFound;
 @RequestMapping("/tareas")
 public class TareaController {
 	@Autowired
-	private TareaService tareaService; 
-	
+	private TareaService tareaService;
+
 	@GetMapping
-	public ResponseEntity<?> list(){
+	public ResponseEntity<?> list() {
 		return ResponseEntity.ok(this.tareaService.findAll());
 	}
+
 	@GetMapping("/{idTarea}")
 	public ResponseEntity<?> findByid(@PathVariable int idTarea) {
 		try {
@@ -38,9 +39,9 @@ public class TareaController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody Tarea tarea){
+	public ResponseEntity<?> create(@RequestBody Tarea tarea) {
 		try {
 			return ResponseEntity.status(HttpStatus.CREATED).body(this.tareaService.create(tarea));
 
@@ -49,53 +50,80 @@ public class TareaController {
 
 		}
 	}
-	
+
 	@PutMapping("/{idTarea}")
-	public ResponseEntity<?> update(@PathVariable int idTarea, @RequestBody Tarea tarea){
+	public ResponseEntity<?> update(@PathVariable int idTarea, @RequestBody Tarea tarea) {
 		try {
 			return ResponseEntity.ok(this.tareaService.update(tarea, idTarea));
 		} catch (TareaNotFound ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		} catch(TareaExceptions ex) {
+		} catch (TareaExceptions ex) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 		}
 	}
-	
+
 	@DeleteMapping("/{idTarea}")
-	public ResponseEntity<?> delete(@PathVariable int idTarea){
+	public ResponseEntity<?> delete(@PathVariable int idTarea) {
 		try {
 			this.tareaService.delete(idTarea);
 			return ResponseEntity.ok().build();
-		} catch ( TareaExceptions e) {
+		} catch (TareaExceptions e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/pendientes")
-	public ResponseEntity<?> pendientes(){
+	public ResponseEntity<?> pendientes() {
 		return ResponseEntity.ok(this.tareaService.Pendientes());
 	}
-	
+
 	@GetMapping("/progreso")
-	public ResponseEntity<?> progreso(){
+	public ResponseEntity<?> progreso() {
 		return ResponseEntity.ok(this.tareaService.Progreso());
 	}
 
 	@GetMapping("/completadas")
-	public ResponseEntity<?> completadas(){
+	public ResponseEntity<?> completadas() {
 		return ResponseEntity.ok(this.tareaService.Completadas());
 	}
-	
+
 	@PutMapping("/{idTarea}/iniciar")
-	public ResponseEntity<?> iniciarTarea(@PathVariable int idTarea){
+	public ResponseEntity<?> iniciarTarea(@PathVariable int idTarea) {
 		try {
 			return ResponseEntity.ok(this.tareaService.marcarEnProgreso(idTarea));
 		} catch (TareaNotFound ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		} catch(TareaExceptions ex) {
+		} catch (TareaExceptions ex) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 		}
+	}
+
+	@PutMapping("/{idTarea}/completar")
+	public ResponseEntity<?> completarTarea(@PathVariable int idTarea) {
+		try {
+			return ResponseEntity.ok(this.tareaService.marcarComoCompletada(idTarea));
+		} catch (TareaNotFound ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		} catch (TareaExceptions ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+		}
+	}
+	
+	@GetMapping("/vencidas")
+	public ResponseEntity<?> vencidas() {
+	    return ResponseEntity.ok(this.tareaService.obtenerVencidas());
+	}
+
+	// Obtener tareas no vencidas
+	@GetMapping("/no-vencidas")
+	public ResponseEntity<?> noVencidas() {
+	    return ResponseEntity.ok(this.tareaService.obtenerNoVencidas());
+	}
+
+	// Buscar tareas por título
+	@GetMapping("/buscar/{titulo}")
+	public ResponseEntity<?> buscarPorTitulo(@PathVariable String titulo) {
+	    return ResponseEntity.ok(this.tareaService.buscarPorTitulo(titulo));
 	}
 
 }
