@@ -67,7 +67,7 @@ public class TareaController {
 		try {
 			this.tareaService.delete(idTarea);
 			return ResponseEntity.ok().build();
-		} catch (TareaExceptions e) {
+		} catch (TareaNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}

@@ -76,7 +76,7 @@ public class TareaService {
 	//delete
 	public boolean delete(int idTarea) {
 		
-		if (this.tareaRepository.existsById(idTarea)) {
+		if (!this.tareaRepository.existsById(idTarea)) {
 			throw new TareaNotFound("La tarea no existe");
 		}
 			this.tareaRepository.deleteById(idTarea);
