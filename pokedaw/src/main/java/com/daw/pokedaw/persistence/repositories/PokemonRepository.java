@@ -12,10 +12,10 @@ import com.daw.pokedaw.persistence.entities.enums.Tipo;
 
 public interface PokemonRepository extends ListCrudRepository<Pokemon, Integer> {
 
-    Optional<Pokemon> findByNumeroPokedex(Integer numeroPokedex);
+    List<Pokemon> findByNumeroPokedex(Integer numeroPokedex);
 
-    List<Pokemon> findByFechaCapturaBetween(LocalDate desde, LocalDate hasta);
+    List<Pokemon> findByFechaCaptura(LocalDate desde, LocalDate hasta);
 
-    List<Pokemon> findByTipo1OrTipo2(Tipo tipo1, Tipo tipo2);
+    List<Pokemon> findByTipo(Tipo tipo1, Tipo tipo2);
 
 }
