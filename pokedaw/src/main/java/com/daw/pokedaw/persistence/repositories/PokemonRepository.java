@@ -14,8 +14,8 @@ public interface PokemonRepository extends ListCrudRepository<Pokemon, Integer> 
 
     List<Pokemon> findByNumeroPokedex(Integer numeroPokedex);
 
-    List<Pokemon> findByFechaCaptura(LocalDate desde, LocalDate hasta);
+    List<Pokemon> findByFechaCapturaBetween(LocalDate desde, LocalDate hasta);
 
-    List<Pokemon> findByTipo(Tipo tipo1, Tipo tipo2);
+    List<Pokemon> findByTipo1OrTipo2(Tipo tipo1, Tipo tipo2);;
 
 }

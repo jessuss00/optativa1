@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.daw.pokedaw.persistence.entities.Pokemon;
+import com.daw.pokedaw.persistence.entities.enums.Pokeball;
 import com.daw.pokedaw.persistence.entities.enums.Tipo;
 import com.daw.pokedaw.service.PokemonService;
 import com.daw.pokedaw.service.exeptions.NotFoundExeptions;
@@ -52,7 +53,7 @@ public class PokemonController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody Pokemon p) {
         try {
-            return ResponseEntity.ok(this.pokemonService.update(id, p));
+            return ResponseEntity.ok(this.pokemonService.update(p, id));
         } catch (NotFoundExeptions ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (PokemonException ex) {
@@ -96,36 +97,28 @@ public class PokemonController {
     }
 
     // Buscar Pokémon capturados entre dos fechas
-    @GetMapping("/capturados")
-    public ResponseEntity<?> capturadosEnRango(@RequestParam String desde, @RequestParam String hasta) {
+    @GetMapping("/capturados/{desde}/{hasta}")
+    public ResponseEntity<?> capturadosEnRango(@PathVariable String desde, @PathVariable String hasta) {
         try {
             LocalDate fechaDesde = LocalDate.parse(desde);
             LocalDate fechaHasta = LocalDate.parse(hasta);
-            List<Pokemon> lista = this.pokemonService.findByFechaCaptura(fechaDesde, fechaHasta);
-            return ResponseEntity.ok(lista);
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Formato de fecha inválido. Usa el formato YYYY-MM-DD.");
+            return ResponseEntity.ok(this.pokemonService.findByFechaCaptura(fechaDesde, fechaHasta));
+        
         } catch (PokemonException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // Cambiar tipos de un Pokémon
     @PutMapping("/{id}/cambiar-tipos")
-    public ResponseEntity<?> cambiarTipos(
-            @PathVariable int id,
-            @RequestParam String tipo1,
-            @RequestParam(required = false) String tipo2) {
+    public ResponseEntity<?> cambiarTipos(@PathVariable int id,@RequestParam String tipo1,@RequestParam String tipo2) {
         try {
-            Tipo t1 = Tipo.valueOf(tipo1.toUpperCase());
-            Tipo t2 = (tipo2 == null) ? Tipo.NINGUNO : Tipo.valueOf(tipo2.toUpperCase());
-            return ResponseEntity.ok(this.pokemonService.cambiarTipo(id, t1, t2));
+        	Tipo t1 = Tipo.valueOf(tipo1.toUpperCase());
+            Tipo t2 = Tipo.valueOf(tipo2.toUpperCase());
+            return ResponseEntity.ok(this.pokemonService.cambiarTipos(id, t1, t2));
         } catch (NotFoundExeptions ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Tipo inválido. Revisa los valores del enum TipoPokemon.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tipo inválido.");
         } catch (PokemonException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }

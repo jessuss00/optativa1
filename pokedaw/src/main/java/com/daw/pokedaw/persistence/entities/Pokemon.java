@@ -30,11 +30,13 @@ public class Pokemon {
 	private int numeroPokedex;
 	private String nombre;
 	@Enumerated(value = EnumType.STRING)
-	private Pokeball tipo1;
+	private Tipo tipo1;
 	@Enumerated(value = EnumType.STRING)
 	private Tipo tipo2;
 	@Column(name = "fecha_captura")
 	private LocalDate fechaCaptura;
+	@Enumerated(value = EnumType.STRING)
+	private Pokeball capturado;
 	
 
 }

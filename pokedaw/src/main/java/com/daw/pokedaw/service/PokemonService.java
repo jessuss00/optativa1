@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.daw.pokedaw.persistence.entities.Pokemon;
+import com.daw.pokedaw.persistence.entities.enums.Pokeball;
 import com.daw.pokedaw.persistence.entities.enums.Tipo;
 import com.daw.pokedaw.persistence.repositories.PokemonRepository;
 
@@ -66,6 +67,9 @@ public class PokemonService {
         if (pokemon.getFechaCaptura() != null) {
             throw new PokemonException("No se puede modificar la fecha de captura");
         }
+        if (pokemon.getTipo1() != null || pokemon.getTipo2() !=null) {
+            throw new PokemonException("Solo se puede modificar el tipo con el endpoint");
+        }
 
         Pokemon pokemonBD = this.findById(idPokemon);
 
@@ -93,25 +97,28 @@ public class PokemonService {
 
     // Buscar capturados en un rango de fechas
     public List<Pokemon> findByFechaCaptura(LocalDate desde, LocalDate hasta) {
-        return this.pokemonRepository.findByFechaCaptura(desde, hasta);
+        return this.pokemonRepository.findByFechaCapturaBetween(desde, hasta);
     }
 
     // Buscar por tipo (tipo1 o tipo2)
  
     public List<Pokemon> findByTipo(Tipo tipo) {
-        return this.pokemonRepository.findByTipo(tipo, tipo);
+        return this.pokemonRepository.findByTipo1OrTipo2(tipo, tipo);
     }
 
     // Cambiar tipos 
-    public Pokemon cambiarTipo(int idPokemon, Tipo nuevoTipo1, Tipo nuevoTipo2) {
+    public Pokemon cambiarTipos(int idPokemon, Tipo nuevoTipo1, Tipo nuevoTipo2) {
         Pokemon pokemonBD = this.findById(idPokemon);
-
-        if (nuevoTipo1.equals(nuevoTipo2)) {
-            throw new PokemonException("El tipo1 y tipo2 no pueden ser iguales");
+        if (nuevoTipo1 != null && pokemonBD.getTipo1() != nuevoTipo1) {
+            pokemonBD.setTipo1(nuevoTipo1);
+        }
+        if (nuevoTipo2 != null && pokemonBD.getTipo2() != nuevoTipo2) {
+            pokemonBD.setTipo2(nuevoTipo2);
         }
 
-        pokemonBD.setTipo1(nuevoTipo1);
-        pokemonBD.setTipo2(nuevoTipo2);
+        if (pokemonBD.getTipo1() == pokemonBD.getTipo2() && pokemonBD.getTipo1() != Tipo.NINGUNO) {
+            throw new PokemonException("El tipo1 y tipo2 no pueden ser iguales");
+        }
 
         return this.pokemonRepository.save(pokemonBD);
     }
